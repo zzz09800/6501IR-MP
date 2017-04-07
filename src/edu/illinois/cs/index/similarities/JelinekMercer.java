@@ -21,6 +21,8 @@ public class JelinekMercer extends LMSimilarity {
 	 */
 	@Override
 	protected float score(BasicStats stats, float termFreq, float docLength) {
+		float res;
+
 		return 0;
 	}
 

@@ -21,6 +21,7 @@ public class DirichletPrior extends LMSimilarity {
 	 */
 	@Override
 	protected float score(BasicStats stats, float termFreq, float docLength) {
+
 		return 0;
 	}
 

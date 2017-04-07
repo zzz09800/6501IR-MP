@@ -13,6 +13,24 @@ public class PivotedLength extends SimilarityBase {
 	 */
 	@Override
 	protected float score(BasicStats stats, float termFreq, float docLength) {
+		float res;
+		double s, N, df, cwq, cwd, avgDocLength;
+		double head, body, tail;
+
+		N = stats.getNumberOfDocuments();
+		df = stats.getDocFreq();
+		cwd = termFreq * docLength;
+		avgDocLength = stats.getNumberOfFieldTokens() * stats.getAvgFieldLength();
+		cwq = 1;
+
+		s=0.5;
+
+		head=(1+Math.log(1+Math.log(cwd)))/(1-s+s*(docLength/avgDocLength));
+		body=cwq;
+		tail=Math.log((N+1)/df);
+
+		res=(float)(head*body*tail);
+
 		return 0;
 	}
 
