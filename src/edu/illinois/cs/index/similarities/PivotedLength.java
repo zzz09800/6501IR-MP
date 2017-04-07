@@ -23,7 +23,7 @@ public class PivotedLength extends SimilarityBase {
 		avgDocLength = stats.getNumberOfFieldTokens() * stats.getAvgFieldLength();
 		cwq = 1;
 
-		s=0.5;
+		s=0.75; //[0,1]
 
 		head=(1+Math.log(1+Math.log(cwd)))/(1-s+s*(docLength/avgDocLength));
 		body=cwq;

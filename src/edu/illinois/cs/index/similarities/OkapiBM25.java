@@ -18,9 +18,9 @@ public class OkapiBM25 extends SimilarityBase {
 		double head, body, tail;
 		double N, df, cwq, cwd, avgDocLength;
 
-		k1 = 1.2;
-		k2 = 100;
-		b = 0.75;
+		k1 = 1.5;   //[1.2,2]
+		k2 = 750;   //(0,1000]
+		b = 1.0;    //[0.75,1.2]
 
 		N = stats.getNumberOfDocuments();
 		df = stats.getDocFreq();

@@ -24,7 +24,7 @@ public class DirichletPrior extends LMSimilarity {
 		float res;
 
 		double pwc,n,niu,pswd,alpha;
-		niu=2000;   //[2000,3000]
+		niu=2500;   //[2000,3000]
 		n=docLength;
 
 		pwc=model.computeProbability(stats);
