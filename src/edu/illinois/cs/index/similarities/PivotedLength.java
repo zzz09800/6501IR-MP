@@ -31,7 +31,7 @@ public class PivotedLength extends SimilarityBase {
 
 		res=(float)(head*body*tail);
 
-		return 0;
+		return res;
 	}
 
 	@Override

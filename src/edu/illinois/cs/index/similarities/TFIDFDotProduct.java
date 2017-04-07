@@ -16,7 +16,7 @@ public class TFIDFDotProduct extends SimilarityBase {
 		float res;
 		double logcwd, logN_1_df;
 		logN_1_df = Math.log10((stats.getNumberOfDocuments() + 1) / stats.getDocFreq());
-		logcwd = Math.log10(termFreq * docLength);
+		logcwd = Math.log10(termFreq);
 
 		res = (float) ((1 + logcwd) * logN_1_df);
 
