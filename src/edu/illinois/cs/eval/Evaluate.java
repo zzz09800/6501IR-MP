@@ -34,13 +34,13 @@ public class Evaluate {
 		BufferedReader br = new BufferedReader(new FileReader(_judgeFile));
 		String line = null, judgement = null;
 		int k = 10;
-		double meanAvgPrec = 0.0, p_k = 0.0, mRR = 0.0, nDCG = 0.0;
+		double AvgPrec = 0.0, p_k = 0.0, mRR = 0.0, nDCG = 0.0;
 		double numQueries = 0.0;
 		while ((line = br.readLine()) != null) {
 			judgement = br.readLine();
 
 			//compute corresponding AP
-			meanAvgPrec += AvgPrec(line, judgement);
+			AvgPrec += AvgPrec(line, judgement);
 			//compute corresponding P@K
 			p_k += Prec(line, judgement, k);
 			//compute corresponding MRR
@@ -52,7 +52,7 @@ public class Evaluate {
 		}
 		br.close();
 
-		System.out.println("\nMAP: " + meanAvgPrec / numQueries);//this is the final MAP performance of your selected ranker
+		System.out.println("\nMAP: " + AvgPrec / numQueries);//this is the final MAP performance of your selected ranker
 		System.out.println("\nP@" + k + ": " + p_k / numQueries);//this is the final P@K performance of your selected ranker
 		System.out.println("\nMRR: " + mRR / numQueries);//this is the final MRR performance of your selected ranker
 		System.out.println("\nNDCG: " + nDCG / numQueries); //this is the final NDCG performance of your selected ranker
@@ -72,6 +72,7 @@ public class Evaluate {
 			if (relDocs.contains(rdoc.title())) {
 				//how to accumulate average precision (avgp) when we encounter a relevant document
 				numRel++;
+				avgp=avgp+(numRel/i);
 				System.out.print("  ");
 			} else {
 				//how to accumulate average precision (avgp) when we encounter an irrelevant document
@@ -83,6 +84,7 @@ public class Evaluate {
 
 		//compute average precision here
 		// avgp = ?
+		avgp=avgp/numRel;
 		System.out.println("Average Precision: " + avgp);
 		return avgp;
 	}
@@ -91,6 +93,33 @@ public class Evaluate {
 	private static double Prec(String query, String docString, int k) {
 		double p_k = 0;
 		//your code for computing precision at K here
+
+		int i=1;
+		double numRel = 0;
+		ArrayList<ResultDoc> results = _searcher.search(query).getDocs();
+		if (results.size() == 0)
+			return 0; // no result returned
+
+		HashSet<String> relDocs = new HashSet<String>(Arrays.asList(docString.split(" ")));
+		System.out.println("\nQuery: " + query);
+		for (ResultDoc rdoc : results) {
+			if (relDocs.contains(rdoc.title())) {
+				//how to accumulate average precision (avgp) when we encounter a relevant document
+				numRel++;
+				System.out.print("  ");
+			} else {
+				//how to accumulate average precision (avgp) when we encounter an irrelevant document
+				System.out.print("X ");
+			}
+			System.out.println(i + ". " + rdoc.title());
+			++i;
+			if((i-1)==k)
+				break;
+		}
+
+		p_k=numRel/(i-1);
+		System.out.println("Precision@K: " + p_k);
+
 		return p_k;
 	}
 
@@ -98,6 +127,30 @@ public class Evaluate {
 	private static double RR(String query, String docString) {
 		double rr = 0;
 		//your code for computing Reciprocal Rank here
+
+		int location=0;
+		int i=1;
+		ArrayList<ResultDoc> results = _searcher.search(query).getDocs();
+		if (results.size() == 0)
+			return 0; // no result returned
+
+		HashSet<String> relDocs = new HashSet<String>(Arrays.asList(docString.split(" ")));
+		System.out.println("\nQuery: " + query);
+		for (ResultDoc rdoc : results) {
+			if (relDocs.contains(rdoc.title())) {
+				//how to accumulate average precision (avgp) when we encounter a relevant document
+				location=i;
+				System.out.print("  ");
+			} else {
+				//how to accumulate average precision (avgp) when we encounter an irrelevant document
+				System.out.print("X ");
+			}
+			System.out.println(i + ". " + rdoc.title());
+			++i;
+		}
+		
+		rr=1/location;
+
 		return rr;
 	}
 
@@ -105,6 +158,30 @@ public class Evaluate {
 	private static double NDCG(String query, String docString, int k) {
 		double ndcg = 0;
 		//your code for computing Normalized Discounted Cumulative Gain here
+
+		int i=1;
+		ArrayList<ResultDoc> results = _searcher.search(query).getDocs();
+		if (results.size() == 0)
+			return 0; // no result returned
+
+		HashSet<String> relDocs = new HashSet<String>(Arrays.asList(docString.split(" ")));
+		System.out.println("\nQuery: " + query);
+		for (ResultDoc rdoc : results) {
+			if (relDocs.contains(rdoc.title())) {
+				//how to accumulate average precision (avgp) when we encounter a relevant document
+				ndcg=ndcg+(Math.pow(2,1)-1)/(Math.log(1+i)/Math.log(2));
+				System.out.print("  ");
+			} else {
+				//how to accumulate average precision (avgp) when we encounter an irrelevant document
+				System.out.print("X ");
+			}
+			System.out.println(i + ". " + rdoc.title());
+			++i;
+			if((i-1)==k)
+				break;
+		}
+
+
 		return ndcg;
 	}
 }
