@@ -34,13 +34,13 @@ public class Evaluate {
 		BufferedReader br = new BufferedReader(new FileReader(_judgeFile));
 		String line = null, judgement = null;
 		int k = 10;
-		double AvgPrec = 0.0, p_k = 0.0, mRR = 0.0, nDCG = 0.0;
+		double meanAvgPrec = 0.0, p_k = 0.0, mRR = 0.0, nDCG = 0.0;
 		double numQueries = 0.0;
 		while ((line = br.readLine()) != null) {
 			judgement = br.readLine();
 
 			//compute corresponding AP
-			AvgPrec += AvgPrec(line, judgement);
+			meanAvgPrec += AvgPrec(line, judgement);
 			//compute corresponding P@K
 			p_k += Prec(line, judgement, k);
 			//compute corresponding MRR
@@ -52,7 +52,7 @@ public class Evaluate {
 		}
 		br.close();
 
-		System.out.println("\nMAP: " + AvgPrec / numQueries);//this is the final MAP performance of your selected ranker
+		System.out.println("\nMAP: " + meanAvgPrec / numQueries);//this is the final MAP performance of your selected ranker
 		System.out.println("\nP@" + k + ": " + p_k / numQueries);//this is the final P@K performance of your selected ranker
 		System.out.println("\nMRR: " + mRR / numQueries);//this is the final MRR performance of your selected ranker
 		System.out.println("\nNDCG: " + nDCG / numQueries); //this is the final NDCG performance of your selected ranker
@@ -79,12 +79,15 @@ public class Evaluate {
 				System.out.print("X ");
 			}
 			System.out.println(i + ". " + rdoc.title());
-			++i;
+			i++;
 		}
 
 		//compute average precision here
 		// avgp = ?
-		avgp=avgp/numRel;
+		if(numRel!=0)
+			avgp=avgp/numRel;
+		else
+			avgp=0;
 		System.out.println("Average Precision: " + avgp);
 		return avgp;
 	}
@@ -130,6 +133,7 @@ public class Evaluate {
 
 		int location=0;
 		int i=1;
+		int foundflag=0;
 		ArrayList<ResultDoc> results = _searcher.search(query).getDocs();
 		if (results.size() == 0)
 			return 0; // no result returned
@@ -139,7 +143,10 @@ public class Evaluate {
 		for (ResultDoc rdoc : results) {
 			if (relDocs.contains(rdoc.title())) {
 				//how to accumulate average precision (avgp) when we encounter a relevant document
-				location=i;
+				if(foundflag==0) {
+					location=i;
+					foundflag=1;
+				}
 				System.out.print("  ");
 			} else {
 				//how to accumulate average precision (avgp) when we encounter an irrelevant document
@@ -148,8 +155,11 @@ public class Evaluate {
 			System.out.println(i + ". " + rdoc.title());
 			++i;
 		}
-		
-		rr=1/location;
+
+		if(location!=0)
+			rr=1/location;
+		else
+			rr=0;
 
 		return rr;
 	}
@@ -157,6 +167,7 @@ public class Evaluate {
 	//Normalized Discounted Cumulative Gain
 	private static double NDCG(String query, String docString, int k) {
 		double ndcg = 0;
+		double idcg = 0;
 		//your code for computing Normalized Discounted Cumulative Gain here
 
 		int i=1;
@@ -170,9 +181,11 @@ public class Evaluate {
 			if (relDocs.contains(rdoc.title())) {
 				//how to accumulate average precision (avgp) when we encounter a relevant document
 				ndcg=ndcg+(Math.pow(2,1)-1)/(Math.log(1+i)/Math.log(2));
+				idcg=idcg+(Math.pow(2,1)-1)/(Math.log(1+i)/Math.log(2));
 				System.out.print("  ");
 			} else {
 				//how to accumulate average precision (avgp) when we encounter an irrelevant document
+				idcg=idcg+(Math.pow(2,1)-1)/(Math.log(1+i)/Math.log(2));
 				System.out.print("X ");
 			}
 			System.out.println(i + ". " + rdoc.title());
@@ -182,6 +195,6 @@ public class Evaluate {
 		}
 
 
-		return ndcg;
+		return ndcg/idcg;
 	}
 }
