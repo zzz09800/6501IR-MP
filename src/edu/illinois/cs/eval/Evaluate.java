@@ -27,7 +27,7 @@ public class Evaluate {
 
 	//Please implement P@K, MRR and NDCG accordingly
 	public static void main(String[] args) throws IOException {
-		String method = "--bdp";//specify the ranker you want to test
+		String method = "--jm";//specify the ranker you want to test
 
 		_searcher = new Searcher(_indexPath);
 		Runner.setSimilarity(_searcher, method);

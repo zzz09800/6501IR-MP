@@ -34,7 +34,7 @@ public class DirichletPrior extends LMSimilarity {
 
 		res=(float)(Math.log10(pswd/(alpha*pwc))+queryLength*Math.log(alpha));
 
-		return 0;
+		return res;
 	}
 
 	@Override
