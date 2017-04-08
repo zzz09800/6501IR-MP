@@ -27,7 +27,7 @@ public class Evaluate {
 
 	//Please implement P@K, MRR and NDCG accordingly
 	public static void main(String[] args) throws IOException {
-		String method = "--jm";//specify the ranker you want to test
+		String method = "--bdp";//specify the ranker you want to test
 
 		_searcher = new Searcher(_indexPath);
 		Runner.setSimilarity(_searcher, method);
@@ -85,7 +85,7 @@ public class Evaluate {
 		//compute average precision here
 		// avgp = ?
 		if(numRel!=0)
-			avgp=avgp/numRel;
+			avgp=avgp/(i-1);
 		else
 			avgp=0;
 		System.out.println("Average Precision: " + avgp);
