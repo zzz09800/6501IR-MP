@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import edu.illinois.cs.index.Indexer;
 import edu.illinois.cs.index.ResultDoc;
 import edu.illinois.cs.index.Runner;
 import edu.illinois.cs.index.Searcher;
@@ -25,9 +26,15 @@ public class Evaluate {
 	final static String _indexPath = "lucene-npl-index";
 	static Searcher _searcher = null;
 
+	final static String _dataset = "npl";
+	final static String _prefix = "data/";
+	final static String _file = "npl.txt";
+
 	//Please implement P@K, MRR and NDCG accordingly
 	public static void main(String[] args) throws IOException {
-		String method = "--bdp";//specify the ranker you want to test
+		String method = "--dp";//specify the ranker you want to test
+
+		Indexer.index(_indexPath, _prefix, _file);
 
 		_searcher = new Searcher(_indexPath);
 		Runner.setSimilarity(_searcher, method);
@@ -42,20 +49,20 @@ public class Evaluate {
 			//compute corresponding AP
 			meanAvgPrec += AvgPrec(line, judgement);
 			//compute corresponding P@K
-			p_k += Prec(line, judgement, k);
+			//p_k += Prec(line, judgement, k);
 			//compute corresponding MRR
-			mRR += RR(line, judgement);
+			//mRR += RR(line, judgement);
 			//compute corresponding NDCG
-			nDCG += NDCG(line, judgement, k);
+			//nDCG += NDCG(line, judgement, k);
 
 			++numQueries;
 		}
 		br.close();
 
 		System.out.println("\nMAP: " + meanAvgPrec / numQueries);//this is the final MAP performance of your selected ranker
-		System.out.println("\nP@" + k + ": " + p_k / numQueries);//this is the final P@K performance of your selected ranker
-		System.out.println("\nMRR: " + mRR / numQueries);//this is the final MRR performance of your selected ranker
-		System.out.println("\nNDCG: " + nDCG / numQueries); //this is the final NDCG performance of your selected ranker
+		//System.out.println("\nP@" + k + ": " + p_k / numQueries);//this is the final P@K performance of your selected ranker
+		//System.out.println("\nMRR: " + mRR / numQueries);//this is the final MRR performance of your selected ranker
+		//System.out.println("\nNDCG: " + nDCG / numQueries); //this is the final NDCG performance of your selected ranker
 	}
 
 	private static double AvgPrec(String query, String docString) {
@@ -73,19 +80,19 @@ public class Evaluate {
 				//how to accumulate average precision (avgp) when we encounter a relevant document
 				numRel++;
 				avgp=avgp+(numRel/i);
-				System.out.print("  ");
+				//System.out.print("  ");
 			} else {
 				//how to accumulate average precision (avgp) when we encounter an irrelevant document
-				System.out.print("X ");
+				//System.out.print("X ");
 			}
-			System.out.println(i + ". " + rdoc.title());
+			//System.out.println(i + ". " + rdoc.title());
 			i++;
 		}
 
 		//compute average precision here
 		// avgp = ?
 		if(numRel!=0)
-			avgp=avgp/(i-1);
+			avgp=avgp/numRel;
 		else
 			avgp=0;
 		System.out.println("Average Precision: " + avgp);
@@ -146,6 +153,8 @@ public class Evaluate {
 				if(foundflag==0) {
 					location=i;
 					foundflag=1;
+					rr=1/location;
+					return rr;
 				}
 				System.out.print("  ");
 			} else {
@@ -198,3 +207,57 @@ public class Evaluate {
 		return ndcg/idcg;
 	}
 }
+
+/*
+BDP:
+MAP: 0.2376220771036018
+P@10: 0.30752688172043013
+MRR: 0.43010752688172044
+NDCG: 0.3390595276297791
+
+JM w/querylength:
+MAP: 0.009477142774034072
+P@10: 0.008602150537634409
+MRR: 0.021505376344086023
+NDCG: 0.010190084148899898
+
+JM wo/querylength
+MAP: 0.273938603200432
+P@10: 0.34408602150537637
+MRR: 0.5591397849462365
+NDCG: 0.38521258549273973
+
+OK BM25:
+MAP: 0.2376220771036018
+P@10: 0.30752688172043013
+MRR: 0.43010752688172044
+NDCG: 0.3390595276297791
+
+PL:
+MAP: 0.25629677078993096
+P@10: 0.3215053763440861
+MRR: 0.5161290322580645
+NDCG: 0.35978957778686943
+
+TF-IDF:
+MAP: 0.2792703779734297
+P@10: 0.35806451612903223
+MRR: 0.5913978494623656
+NDCG: 0.3952621251795122
+
+DP w/querylrngth:
+MAP: 0.13046846646117524
+P@10: 0.153763440860215
+MRR: 0.3333333333333333
+NDCG: 0.18127100479573013
+
+DP wo/querylrngth:
+MAP: 0.18859564297738987
+P@10: 0.2118279569892473
+MRR: 0.44086021505376344
+NDCG: 0.2492967302772326
+
+Q2
+Best Param all lest most?
+
+*/

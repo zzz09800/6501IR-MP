@@ -25,14 +25,15 @@ public class JelinekMercer extends LMSimilarity {
 
 		double lamada,pswd,pml,pwc,alpha;
 
-		lamada=0.1; //[0,1]
+		lamada=0.1; //[0,1] 0.1
 		alpha=lamada;
 
 		pwc=model.computeProbability(stats);
 		pml=termFreq/docLength;
 		pswd=(1-lamada)*pml+lamada*pwc;
 
-		res=(float)(Math.log10(pswd/(alpha*pwc))+queryLength*Math.log10(alpha));
+		res=(float)(Math.log(pswd/(alpha*pwc))+Math.log(alpha));
+		//res=(float)(Math.log(pswd/(alpha*pwc))+queryLength*Math.log(alpha));
 
 		return res;
 	}

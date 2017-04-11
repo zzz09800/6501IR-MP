@@ -41,7 +41,7 @@ public class Runner {
 
 		//Interactive searching function with your selected ranker
 		//NOTE: you have to create the index before searching!
-		String method = "--bdp";//specify the ranker you want to test
+		String method = "--ok";//specify the ranker you want to test
 		interactiveSearch(method);
 	}
 
