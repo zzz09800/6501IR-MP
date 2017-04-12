@@ -32,7 +32,7 @@ public class JelinekMercer extends LMSimilarity {
 		pml=termFreq/docLength;
 		pswd=(1-lamada)*pml+lamada*pwc;
 
-		res=(float)(Math.log(pswd/(alpha*pwc))+Math.log(alpha));
+		res=(float)(Math.log10(pswd/(alpha*pwc))+Math.log10(alpha));
 		//res=(float)(Math.log(pswd/(alpha*pwc))+queryLength*Math.log(alpha));
 
 		return res;

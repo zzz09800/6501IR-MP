@@ -19,8 +19,8 @@ public class PivotedLength extends SimilarityBase {
 
 		N = stats.getNumberOfDocuments();
 		df = stats.getDocFreq();
-		cwd = termFreq * docLength;
-		avgDocLength = stats.getNumberOfFieldTokens() * stats.getAvgFieldLength();
+		cwd = termFreq;
+		avgDocLength = stats.getAvgFieldLength();
 		cwq = 1;
 
 		s=0.75; //[0,1] 0.75
