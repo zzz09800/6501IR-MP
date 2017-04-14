@@ -2,6 +2,8 @@ package edu.illinois.cs.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,6 +98,7 @@ public class Searcher {
 	 */
 	private SearchResult runSearch(Query luceneQuery, SearchQuery searchQuery) {
 		try {
+			int query_size=0;
 			System.out.println("\nScoring documents with " + indexSearcher.getSimilarity().toString());
 			Similarity sim = indexSearcher.getSimilarity();
 
@@ -104,15 +107,58 @@ public class Searcher {
 				Set<Term> terms = new HashSet<Term>();
 				luceneQuery.extractTerms(terms);
 				((JelinekMercer) sim).setQueryLength(terms.size());
+				query_size=terms.size();
+
 			} else if (sim instanceof DirichletPrior) {
 				Set<Term> terms = new HashSet<Term>();
 				luceneQuery.extractTerms(terms);
 				((DirichletPrior) sim).setQueryLength(terms.size());
+				query_size=terms.size();
 			}
 
 			TopDocs docs = indexSearcher.search(luceneQuery, searchQuery.fromDoc() + searchQuery.numResults());
 			ScoreDoc[] hits = docs.scoreDocs;
 			String field = searchQuery.fields().get(0);
+
+			int i;
+			if( sim instanceof JelinekMercer || sim instanceof DirichletPrior){
+				for(i=0;i<hits.length;i++)
+				{
+					Document tempDoc = indexSearcher.doc(hits[i].doc);
+					String contents = tempDoc.getField(field).stringValue();
+					QueryParser tempParser = new QueryParser(Version.LUCENE_46, field, analyzer);
+					String content = tempParser.parse(searchQuery.queryText()).toString();
+
+					String words[] = content.split(" ");
+
+					if (sim instanceof JelinekMercer)
+					{
+						double lamada = 0.1;
+						double alpha=lamada;
+						hits[i].score=(float)(hits[i].score+query_size*Math.log10(alpha));
+					}
+					else if (sim instanceof DirichletPrior)
+					{
+						double niu = 45;
+						double alpha = niu/(words.length+niu);
+						hits[i].score=(float)(hits[i].score+query_size*Math.log10(alpha));
+					}
+
+				}
+
+				Arrays.sort(hits, new Comparator<ScoreDoc>() {
+					@Override
+					public int compare(ScoreDoc o1, ScoreDoc o2) {
+						if(o2.score<o1.score)
+							return -1;
+						else if(o2.score>o1.score)
+							return 1;
+						else return 0;
+					}
+				});
+			}
+
+
 
 			SearchResult searchResult = new SearchResult(searchQuery, docs.totalHits);
 			for (ScoreDoc hit : hits) {
@@ -138,7 +184,7 @@ public class Searcher {
 
 			searchResult.trimResults(searchQuery.fromDoc());
 			return searchResult;
-		} catch (IOException exception) {
+		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
 		return new SearchResult(searchQuery);

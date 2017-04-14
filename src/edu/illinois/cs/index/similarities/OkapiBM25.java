@@ -25,7 +25,7 @@ public class OkapiBM25 extends SimilarityBase {
 		N = stats.getNumberOfDocuments();
 		df = stats.getDocFreq();
 		cwd = termFreq;
-		//avgDocLength = stats.getNumberOfFieldTokens() * stats.getAvgFieldLength();
+
 		avgDocLength = stats.getAvgFieldLength();
 		cwq = 1;
 
@@ -37,6 +37,33 @@ public class OkapiBM25 extends SimilarityBase {
 
 		return res;
 	}
+
+	/*protected float score(BasicStats stats, float termFreq, float docLength) {
+		float res;
+		double k1, k2, b;
+		double head, body, tail;
+		double N, df, cwq, cwd, avgDocLength;
+
+		k1 = 1.2;   //[1.2,2] 1.5    Max=1.2
+		k2 = 750;   //(0,1000] 750   Max=>>>
+		b = 0.75;    //[0.75,1.2] 1.0 Max=0.75
+		double s=0.1;
+
+		N = stats.getNumberOfDocuments();
+		df = stats.getDocFreq();
+		cwd = termFreq;
+
+		avgDocLength = stats.getAvgFieldLength();
+		cwq = 1;
+
+		head=cwq;
+		body=cwd/(cwd+s+s*docLength/avgDocLength);
+		tail=Math.log((N+1)/df);
+
+		res = (float) (head * body * tail);
+
+		return res;
+	}*/
 
 	@Override
 	public String toString() {
