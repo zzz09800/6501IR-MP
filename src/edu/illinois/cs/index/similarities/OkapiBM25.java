@@ -12,7 +12,7 @@ public class OkapiBM25 extends SimilarityBase {
 	 * @param docLength
 	 */
 	@Override
-	protected float score(BasicStats stats, float termFreq, float docLength) {
+	/*protected float score(BasicStats stats, float termFreq, float docLength) {
 		float res;
 		double k1, k2, b;
 		double head, body, tail;
@@ -36,9 +36,9 @@ public class OkapiBM25 extends SimilarityBase {
 		res = (float) (head * body * tail);
 
 		return res;
-	}
+	}*/
 
-	/*protected float score(BasicStats stats, float termFreq, float docLength) {
+	protected float score(BasicStats stats, float termFreq, float docLength) {
 		float res;
 		double k1, k2, b;
 		double head, body, tail;
@@ -63,7 +63,7 @@ public class OkapiBM25 extends SimilarityBase {
 		res = (float) (head * body * tail);
 
 		return res;
-	}*/
+	}
 
 	@Override
 	public String toString() {
